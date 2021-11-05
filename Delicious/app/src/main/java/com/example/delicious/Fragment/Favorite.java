@@ -95,6 +95,7 @@ public class Favorite extends Fragment {
         });
     }
     public void getFoodInfo(ArrayList<DishFavorite> dishFavorites) {
+        ArrayList<FoodInfo> foodInfos = new ArrayList<>();
         for(DishFavorite dishFavorite: dishFavorites) {
             Task<CloudDBZoneSnapshot<FoodInfo>> queryTask =  mCloudDBZone.executeQuery(
                     CloudDBZoneQuery.where(FoodInfo.class).equalTo("idF", dishFavorite.getIdF()),
@@ -105,7 +106,8 @@ public class Favorite extends Fragment {
                 public void onSuccess(CloudDBZoneSnapshot<FoodInfo> snapshot) {
                     CloudDBZoneObjectList<FoodInfo> dbZoneObjectList = snapshot.getSnapshotObjects();
 
-                    ArrayList<FoodInfo> foodInfos = new ArrayList<>();
+
+
                     try {
                         while (dbZoneObjectList.hasNext()) {
                             FoodInfo foodInfo = dbZoneObjectList.next();

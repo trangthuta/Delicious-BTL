@@ -1,9 +1,11 @@
 package com.example.delicious;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -30,6 +32,7 @@ import com.huawei.hmf.tasks.OnCompleteListener;
 import com.huawei.hmf.tasks.OnFailureListener;
 import com.huawei.hmf.tasks.OnSuccessListener;
 import com.huawei.hmf.tasks.Task;
+import com.huawei.hms.hwid.I;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -45,6 +48,7 @@ public class DishDetail extends AppCompatActivity {
     public static AGCStorageManagement mAGCStorageManagement;
     CloudDBZoneWrapper cloudDBZoneWrapper = new CloudDBZoneWrapper();
     ImageView btnBack;
+    ImageView btnDelete;
     TextView nameDish;
     FloatingActionButton floatingActionButton;
     boolean click = false;
@@ -70,6 +74,7 @@ public class DishDetail extends AppCompatActivity {
     }
     public void AnhXa() {
         nameDish = findViewById(R.id.tv_name_dish);
+        btnDelete = findViewById(R.id.btn_dele) ;
         bottomNavigationView = findViewById(R.id.bottom_menu_dish);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -123,6 +128,70 @@ public class DishDetail extends AppCompatActivity {
             }
         });
         floatingActionButton = findViewById(R.id.float_a_like);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DishDetail.this);
+                // Setting Alert Dialog Title
+                alertDialogBuilder.setTitle("Xác nhận để thoát..!!!");
+                // Icon Of Alert Dialog
+                alertDialogBuilder.setIcon(R.drawable.ic_del);
+                // Setting Alert Dialog Message
+                alertDialogBuilder.setMessage("Bạn có muốn xóa món ăn này?");
+                alertDialogBuilder.setCancelable(false);
+
+                alertDialogBuilder.setPositiveButton("Đồng ý", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        //Đóng Activity hiện tại
+                        deleteDish(idDish) ;
+                        finish();
+
+                    }
+                });
+
+
+
+                alertDialogBuilder.setNeutralButton("Hủy", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getApplicationContext(),"Bạn đã click vào nút hủy",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
+    }
+    public void  deleteDish(String idF){
+        Task<CloudDBZoneSnapshot<FoodInfo>> queryTask =  mCloudDBZone.executeQuery(
+                CloudDBZoneQuery.where(FoodInfo.class).equalTo("idF",idF),
+                CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY
+        );
+        queryTask.addOnSuccessListener(new OnSuccessListener<CloudDBZoneSnapshot<FoodInfo>>() {
+            @Override
+            public void onSuccess(CloudDBZoneSnapshot<FoodInfo> snapshot) {
+                try {
+                    Task<Integer> del = mCloudDBZone.executeDelete(snapshot.getSnapshotObjects().get(0));
+                    del.addOnSuccessListener(new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            Toast.makeText(DishDetail.this, "Đã xóa món ăn !", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(DishDetail.this,MainActivity.class));
+                        }
+                    });
+                } catch (AGConnectCloudDBException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(Exception e) {
+                Log.e("err", e.getMessage());
+            }
+        });
     }
     public void getNameDish()
     {
@@ -139,12 +208,16 @@ public class DishDetail extends AppCompatActivity {
             public void onSuccess(CloudDBZoneSnapshot<FoodInfo> foodInfoCloudDBZoneSnapshot) {
                 try {
                     nameDish.setText(foodInfoCloudDBZoneSnapshot.getSnapshotObjects().get(0).getNameF());
+                    if (idacc.equals(foodInfoCloudDBZoneSnapshot.getSnapshotObjects().get(0).getAuthorF())) {
+
+                        btnDelete.setVisibility(View.VISIBLE);
+                    }
                 } catch (AGConnectCloudDBException e) {
                     e.printStackTrace();
                 }
             }
         });
-    };
+    }
 
     public void initService(){
         //Cloud DB
@@ -280,5 +353,7 @@ public class DishDetail extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

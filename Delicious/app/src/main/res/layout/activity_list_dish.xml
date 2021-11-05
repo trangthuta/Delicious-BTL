@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ListDish">
+    tools:context=".ListDish"
+    android:background="@color/bgColor">
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
+        android:id="@+id/listDishOnType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </FrameLayout>

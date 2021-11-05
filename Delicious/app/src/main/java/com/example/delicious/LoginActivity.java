@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
         edtPassLayot = findViewById(R.id.layout_edt_pass);
         btnSignInOTP = findViewById(R.id.btn_sign_inOTP);
         tvDK = findViewById(R.id.tvDK);
-        setControl();
+        //setControl();
     }
     public void setControl() {
         Intent intent = getIntent();
@@ -149,12 +149,17 @@ public class LoginActivity extends AppCompatActivity {
                 // The sign-in is successful, and the user's ID information and authorization code are obtained.
                 AuthAccount authAccount = authAccountTask.getResult();
                 /*checkTrung(authAccount.getDisplayName());*/
-                Toast.makeText(this, ""+authAccount.getDisplayName(), Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(this, "Login success with "+authAccount.getDisplayName(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this ,"Đăng nhập thành công !", Toast.LENGTH_SHORT).show();
                 AGConnectAuthCredential credential = HwIdAuthProvider.credentialWithToken(authAccount.getAccessToken());
                 callBackSignIn(credential);
+
             } else {
                 // The sign-in failed.
-                Log.e("error", "sign in failed:" + ((ApiException) authAccountTask.getException()).getStatusCode());
+//                Log.e("error", "Sign in failed:" + ((ApiException) authAccountTask.getException()).getStatusCode());
+                 Log.e("error", "Sign in failed!" );
+
             }
         }
         AGConnectApi.getInstance().activityLifecycle().onActivityResult(requestCode, resultCode, data);
@@ -350,6 +355,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(SignInResult signInResult) {
                         checkTrung(edtPhoneMailLogin.getText().toString());
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công!`", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

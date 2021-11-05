@@ -53,14 +53,16 @@
             android:layout_height="match_parent"
             android:maxLines="1"
             android:lines="1"
-            android:text="trangthuta9999@gmail.com"
             android:inputType="text"
             android:background="@drawable/bg_edt"
             android:layout_gravity="center_vertical"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:descendantFocusability="beforeDescendants"
-            android:nextFocusDown="@id/edt_pass_li"/>
+            android:nextFocusDown="@id/edt_pass_li"
+            android:text="trangthuta9999@gmail.com"
+            />
+
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layout_edt_pass"
